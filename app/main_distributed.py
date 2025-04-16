@@ -9,7 +9,7 @@ import argparse
 import os
 import pprint
 import yaml
-
+import sys
 import submitit
 
 from app.scaffold import main as app_main
@@ -17,6 +17,33 @@ from src.utils.logging import get_logger
 
 logger = get_logger(force=True)
 
+logger.info(f"[RANK {os.environ.get('RANK', '?')}] Starting process on device {os.environ.get('LOCAL_RANK')}")
+
+print(f"Python path: {sys.executable}")
+print(f"Current working directory: {os.getcwd()}")
+print(f"Script path: {__file__}")
+
+def setup_distributed():
+    rank = int(os.environ.get("RANK", -1))
+    local_rank = int(os.environ.get("LOCAL_RANK", 0))
+    world_size = int(os.environ.get("WORLD_SIZE", -1))
+
+    # Log environment details
+    logger.info(f"[{datetime.now()}] Initializing distributed training")
+    logger.info(f"[RANK {rank}] Starting on device {local_rank}, world size = {world_size}")
+    
+    # Set CUDA device
+    torch.cuda.set_device(local_rank)
+
+    # Initialize process group
+    dist.init_process_group(backend="nccl", init_method="env://")
+
+    # Confirm GPU visibility
+    logger.info(f"[RANK {rank}] Available GPUs: {torch.cuda.device_count()}")
+    logger.info(f"[RANK {rank}] Current GPU: {torch.cuda.current_device()}, "
+                f"Name: {torch.cuda.get_device_name(local_rank)}")
+    
+    return rank, local_rank, world_size
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -148,5 +175,6 @@ def launch():
 
 
 if __name__ == '__main__':
+    print(setup_distributed())
     args = parser.parse_args()
     launch()

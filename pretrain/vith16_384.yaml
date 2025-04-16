@@ -1,17 +1,19 @@
 app: vjepa
-nodes: 16
+nodes: 30
 tasks_per_node: 8
 data:
   dataset_type: VideoDataset
   datasets:
-    - ~/saycam_files.csv
+    - /your_path_to_kinetics710_csv_file_index.csv
+    - /your_path_to_ssv2_csv_file_index.csv
+    - /your_path_to_howto100m_csv_file_index.csv
   decode_one_clip: true
-  batch_size: 24
+  batch_size: 10
   num_clips: 1
   num_frames: 16
   tubelet_size: 2
   sampling_rate: 4
-  crop_size: 224
+  crop_size: 384
   patch_size: 16
   pin_mem: true
   num_workers: 12
@@ -28,7 +30,7 @@ data_aug:
   - 1.0
   reprob: 0.0
 logging:
-  folder: /scratch/eys8549/vjepa_training
+  folder: /your_absolute_file_path_for_saving_logs_and_checkpoints/
   write_tag: jepa
 loss:
   loss_exp: 1.0
@@ -66,7 +68,7 @@ meta:
   use_sdpa: true
   dtype: bfloat16
 model:
-  model_name: vit_large
+  model_name: vit_huge
   pred_depth: 12
   pred_embed_dim: 384
   uniform_power: true
