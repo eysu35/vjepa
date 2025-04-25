@@ -1,0 +1,7 @@
+{"time":"2025-04-25T13:58:26.414081208-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"/home/eys8549/vjepa/wandb/run-20250425_135826-bd4icoki/logs/debug-core.log"}
+{"time":"2025-04-25T13:58:26.733001384-04:00","level":"INFO","msg":"created new stream","id":"bd4icoki"}
+{"time":"2025-04-25T13:58:26.733034885-04:00","level":"INFO","msg":"stream: started","id":"bd4icoki"}
+{"time":"2025-04-25T13:58:26.733066068-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"bd4icoki"}
+{"time":"2025-04-25T13:58:26.733099188-04:00","level":"INFO","msg":"handler: started","stream_id":"bd4icoki"}
+{"time":"2025-04-25T13:58:26.733124884-04:00","level":"INFO","msg":"sender: started","stream_id":"bd4icoki"}
+{"time":"2025-04-25T13:58:26.878101013-04:00","level":"INFO","msg":"Starting system monitor"}

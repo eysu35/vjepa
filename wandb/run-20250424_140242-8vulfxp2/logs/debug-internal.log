@@ -1,0 +1,15 @@
+{"time":"2025-04-24T14:02:42.742823729-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"/home/eys8549/vjepa/wandb/run-20250424_140242-8vulfxp2/logs/debug-core.log"}
+{"time":"2025-04-24T14:02:43.095186063-04:00","level":"INFO","msg":"created new stream","id":"8vulfxp2"}
+{"time":"2025-04-24T14:02:43.09521874-04:00","level":"INFO","msg":"stream: started","id":"8vulfxp2"}
+{"time":"2025-04-24T14:02:43.095262566-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"8vulfxp2"}
+{"time":"2025-04-24T14:02:43.09528478-04:00","level":"INFO","msg":"handler: started","stream_id":"8vulfxp2"}
+{"time":"2025-04-24T14:02:43.095306629-04:00","level":"INFO","msg":"sender: started","stream_id":"8vulfxp2"}
+{"time":"2025-04-24T14:02:43.369296684-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-24T14:04:09.759253971-04:00","level":"INFO","msg":"stream: closing","id":"8vulfxp2"}
+{"time":"2025-04-24T14:04:09.759299433-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-24T14:04:09.75969505-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-24T14:04:10.125655926-04:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-04-24T14:04:10.212980147-04:00","level":"INFO","msg":"handler: closed","stream_id":"8vulfxp2"}
+{"time":"2025-04-24T14:04:10.21299259-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"8vulfxp2"}
+{"time":"2025-04-24T14:04:10.213010513-04:00","level":"INFO","msg":"sender: closed","stream_id":"8vulfxp2"}
+{"time":"2025-04-24T14:04:10.215714488-04:00","level":"INFO","msg":"stream: closed","id":"8vulfxp2"}

@@ -1,0 +1,111 @@
+[INFO    ][2025-04-25 13:50:59][__call__                 ] Loaded training params:
+{'app': 'vjepa',
+ 'data': {'batch_size': 16,
+          'clip_duration': None,
+          'crop_size': 224,
+          'dataset_type': 'VideoDataset',
+          'datasets': ['~/saycam_files.csv'],
+          'decode_one_clip': True,
+          'filter_short_videos': False,
+          'num_clips': 1,
+          'num_frames': 16,
+          'num_workers': 3,
+          'patch_size': 16,
+          'pin_mem': True,
+          'sampling_rate': 4,
+          'tubelet_size': 2},
+ 'data_aug': {'auto_augment': False,
+              'motion_shift': False,
+              'random_resize_aspect_ratio': [0.75, 1.35],
+              'random_resize_scale': [0.3, 1.0],
+              'reprob': 0.0},
+ 'logging': {'folder': '/scratch/eys8549/vjepa_training', 'write_tag': 'jepa'},
+ 'loss': {'loss_exp': 1.0, 'reg_coeff': 0.0},
+ 'mask': [{'aspect_ratio': [0.75, 1.5],
+           'max_keep': None,
+           'max_temporal_keep': 1.0,
+           'num_blocks': 8,
+           'spatial_scale': [0.15, 0.15],
+           'temporal_scale': [1.0, 1.0]},
+          {'aspect_ratio': [0.75, 1.5],
+           'max_keep': None,
+           'max_temporal_keep': 1.0,
+           'num_blocks': 2,
+           'spatial_scale': [0.7, 0.7],
+           'temporal_scale': [1.0, 1.0]}],
+ 'meta': {'dtype': 'bfloat16',
+          'eval_freq': 100,
+          'load_checkpoint': False,
+          'read_checkpoint': None,
+          'seed': 234,
+          'use_sdpa': True},
+ 'model': {'model_name': 'vit_large',
+           'pred_depth': 12,
+           'pred_embed_dim': 384,
+           'uniform_power': True,
+           'use_mask_tokens': True,
+           'zero_init_mask_tokens': True},
+ 'nodes': 16,
+ 'optimization': {'clip_grad': 10.0,
+                  'ema': [0.998, 1.0],
+                  'epochs': 200,
+                  'final_lr': 1e-06,
+                  'final_weight_decay': 0.4,
+                  'ipe': 300,
+                  'ipe_scale': 1.25,
+                  'lr': 0.000625,
+                  'start_lr': 0.0002,
+                  'warmup': 40,
+                  'weight_decay': 0.04},
+ 'tasks_per_node': 8}
+[INFO    ][2025-04-25 13:50:59][main                     ] Running pre-training of app: vjepa
+Traceback (most recent call last):
+  File "/home/eys8549/vjepa/app/main_distributed.py", line 86, in <module>
+    launch()
+  File "/home/eys8549/vjepa/app/main_distributed.py", line 72, in launch
+    trainer()
+  File "/home/eys8549/vjepa/app/main_distributed.py", line 50, in __call__
+    app_main(self.app, args=self.args_pretrain, resume_preempt=False)
+  File "/home/eys8549/vjepa/app/scaffold.py", line 19, in main
+    return importlib.import_module(f'app.{app}.train').main(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1074, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/eys8549/vjepa/app/vjepa/train.py", line 622
+    log_stats()
+               ^
+IndentationError: unindent does not match any outer indentation level
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/home/eys8549/vjepa/app/main_distributed.py", line 86, in <module>
+[rank0]:     launch()
+[rank0]:   File "/home/eys8549/vjepa/app/main_distributed.py", line 72, in launch
+[rank0]:     trainer()
+[rank0]:   File "/home/eys8549/vjepa/app/main_distributed.py", line 50, in __call__
+[rank0]:     app_main(self.app, args=self.args_pretrain, resume_preempt=False)
+[rank0]:   File "/home/eys8549/vjepa/app/scaffold.py", line 19, in main
+[rank0]:     return importlib.import_module(f'app.{app}.train').main(
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/importlib/__init__.py", line 126, in import_module
+[rank0]:     return _bootstrap._gcd_import(name[level:], package, level)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+[rank0]:   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+[rank0]:   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+[rank0]:   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+[rank0]:   File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+[rank0]:   File "<frozen importlib._bootstrap_external>", line 1074, in get_code
+[rank0]:   File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
+[rank0]:   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+[rank0]:   File "/home/eys8549/vjepa/app/vjepa/train.py", line 622
+[rank0]:     log_stats()
+[rank0]:                ^
+[rank0]: IndentationError: unindent does not match any outer indentation level

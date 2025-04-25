@@ -1,0 +1,191 @@
+[INFO    ][2025-04-24 15:25:21][__call__                 ] Loaded training params:
+{'app': 'vjepa',
+ 'data': {'batch_size': 16,
+          'clip_duration': None,
+          'crop_size': 224,
+          'dataset_type': 'VideoDataset',
+          'datasets': ['~/saycam_files.csv'],
+          'decode_one_clip': True,
+          'filter_short_videos': False,
+          'num_clips': 1,
+          'num_frames': 16,
+          'num_workers': 3,
+          'patch_size': 16,
+          'pin_mem': True,
+          'sampling_rate': 4,
+          'tubelet_size': 2},
+ 'data_aug': {'auto_augment': False,
+              'motion_shift': False,
+              'random_resize_aspect_ratio': [0.75, 1.35],
+              'random_resize_scale': [0.3, 1.0],
+              'reprob': 0.0},
+ 'logging': {'folder': '/scratch/eys8549/vjepa_training', 'write_tag': 'jepa'},
+ 'loss': {'loss_exp': 1.0, 'reg_coeff': 0.0},
+ 'mask': [{'aspect_ratio': [0.75, 1.5],
+           'max_keep': None,
+           'max_temporal_keep': 1.0,
+           'num_blocks': 8,
+           'spatial_scale': [0.15, 0.15],
+           'temporal_scale': [1.0, 1.0]},
+          {'aspect_ratio': [0.75, 1.5],
+           'max_keep': None,
+           'max_temporal_keep': 1.0,
+           'num_blocks': 2,
+           'spatial_scale': [0.7, 0.7],
+           'temporal_scale': [1.0, 1.0]}],
+ 'meta': {'dtype': 'bfloat16',
+          'eval_freq': 100,
+          'load_checkpoint': False,
+          'read_checkpoint': None,
+          'seed': 234,
+          'use_sdpa': True},
+ 'model': {'model_name': 'vit_large',
+           'pred_depth': 12,
+           'pred_embed_dim': 384,
+           'uniform_power': True,
+           'use_mask_tokens': True,
+           'zero_init_mask_tokens': True},
+ 'nodes': 16,
+ 'optimization': {'clip_grad': 10.0,
+                  'ema': [0.998, 1.0],
+                  'epochs': 300,
+                  'final_lr': 1e-06,
+                  'final_weight_decay': 0.4,
+                  'ipe': 300,
+                  'ipe_scale': 1.25,
+                  'lr': 0.000625,
+                  'start_lr': 0.0002,
+                  'warmup': 40,
+                  'weight_decay': 0.04},
+ 'tasks_per_node': 8}
+[INFO    ][2025-04-24 15:25:21][main                     ] Running pre-training of app: vjepa
+[INFO    ][2025-04-24 15:25:32][main                     ] which_dtype='bfloat16'
+[INFO    ][2025-04-24 15:25:32][main                     ] Initialized (rank/world-size) 1/2
+[INFO    ][2025-04-24 15:25:40][init_video_model         ] MultiMaskWrapper(
+  (backbone): VisionTransformer(
+    (patch_embed): PatchEmbed3D(
+      (proj): Conv3d(3, 1024, kernel_size=(2, 16, 16), stride=(2, 16, 16))
+    )
+    (blocks): ModuleList(
+      (0-23): 24 x Block(
+        (norm1): LayerNorm((1024,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=1024, out_features=3072, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=1024, out_features=1024, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (norm2): LayerNorm((1024,), eps=1e-06, elementwise_affine=True)
+        (mlp): MLP(
+          (fc1): Linear(in_features=1024, out_features=4096, bias=True)
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=4096, out_features=1024, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (norm): LayerNorm((1024,), eps=1e-06, elementwise_affine=True)
+  )
+)
+[INFO    ][2025-04-24 15:25:40][init_video_model         ] PredictorMultiMaskWrapper(
+  (backbone): VisionTransformerPredictor(
+    (predictor_embed): Linear(in_features=1024, out_features=384, bias=True)
+    (mask_tokens): ParameterList(
+        (0): Parameter containing: [torch.float32 of size 1x1x384 (cuda:0)]
+        (1): Parameter containing: [torch.float32 of size 1x1x384 (cuda:0)]
+    )
+    (predictor_blocks): ModuleList(
+      (0-11): 12 x Block(
+        (norm1): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (attn): Attention(
+          (qkv): Linear(in_features=384, out_features=1152, bias=True)
+          (attn_drop): Dropout(p=0.0, inplace=False)
+          (proj): Linear(in_features=384, out_features=384, bias=True)
+          (proj_drop): Dropout(p=0.0, inplace=False)
+        )
+        (norm2): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+        (mlp): MLP(
+          (fc1): Linear(in_features=384, out_features=1536, bias=True)
+          (act): GELU(approximate='none')
+          (fc2): Linear(in_features=1536, out_features=384, bias=True)
+          (drop): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (predictor_norm): LayerNorm((384,), eps=1e-06, elementwise_affine=True)
+    (predictor_proj): Linear(in_features=384, out_features=1024, bias=True)
+  )
+)
+[INFO    ][2025-04-24 15:25:40][init_video_model         ] Encoder number of parameters: 303885312
+[INFO    ][2025-04-24 15:25:40][init_video_model         ] Predictor number of parameters: 22082944
+[INFO    ][2025-04-24 15:25:40][main                     ] Initializing basic multi-block mask
+[INFO    ][2025-04-24 15:25:43][make_videodataset        ] VideoDataset dataset created
+[INFO    ][2025-04-24 15:25:43][make_videodataset        ] VideoDataset unsupervised data loader created
+[INFO    ][2025-04-24 15:25:43][main                     ] iterations per epoch/dataest length: 300/326
+[INFO    ][2025-04-24 15:25:43][init_opt                 ] Using AdamW
+/home/eys8549/vjepa/app/vjepa/utils.py:209: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  scaler = torch.cuda.amp.GradScaler() if mixed_precision else None
+[INFO    ][2025-04-24 15:25:43][load_checkpoint          ] Encountered exception when loading checkpoint 'NoneType' object has no attribute 'seek'. You can only torch.load from a file that is seekable. Please pre-load the data into a buffer like io.BytesIO and try to load from it instead.
+[INFO    ][2025-04-24 15:25:43][load_checkpoint          ] Encountered exception when loading checkpoint cannot access local variable 'checkpoint' where it is not associated with a value
+[INFO    ][2025-04-24 15:25:43][main                     ] Initializing loader...
+[INFO    ][2025-04-24 15:26:03][main                     ] Epoch 1
+/home/eys8549/vjepa/app/vjepa/train.py:453: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(dtype=dtype, enabled=mixed_precision):
+/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/contextlib.py:105: FutureWarning: `torch.backends.cuda.sdp_kernel()` is deprecated. In the future, this context manager will be removed. Please see `torch.nn.attention.sdpa_kernel()` for the new context manager, with updated signature.
+  self.gen = func(*args, **kwds)
+Traceback (most recent call last):
+  File "/home/eys8549/vjepa/app/main_distributed.py", line 86, in <module>
+    launch()
+  File "/home/eys8549/vjepa/app/main_distributed.py", line 72, in launch
+    trainer()
+  File "/home/eys8549/vjepa/app/main_distributed.py", line 50, in __call__
+    app_main(self.app, args=self.args_pretrain, resume_preempt=False)
+  File "/home/eys8549/vjepa/app/scaffold.py", line 19, in main
+    return importlib.import_module(f'app.{app}.train').main(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/eys8549/vjepa/app/vjepa/train.py", line 502, in main
+    input_var = float(AllReduce.apply(clips.view(clips.shape[0], -1).var(dim=1).mean(dim=0)))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/site-packages/torch/autograd/function.py", line 575, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/eys8549/vjepa/src/utils/distributed.py", line 108, in forward
+    dist.all_reduce(x)
+  File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2806, in all_reduce
+    work = group.allreduce([tensor], opts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/NCCLUtils.hpp:268, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.21.5
+ncclInvalidUsage: This usually reflects invalid usage of NCCL library.
+Last error:
+Duplicate GPU detected : rank 1 and rank 0 both on CUDA device 40
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/home/eys8549/vjepa/app/main_distributed.py", line 86, in <module>
+[rank1]:     launch()
+[rank1]:   File "/home/eys8549/vjepa/app/main_distributed.py", line 72, in launch
+[rank1]:     trainer()
+[rank1]:   File "/home/eys8549/vjepa/app/main_distributed.py", line 50, in __call__
+[rank1]:     app_main(self.app, args=self.args_pretrain, resume_preempt=False)
+[rank1]:   File "/home/eys8549/vjepa/app/scaffold.py", line 19, in main
+[rank1]:     return importlib.import_module(f'app.{app}.train').main(
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/eys8549/vjepa/app/vjepa/train.py", line 502, in main
+[rank1]:     input_var = float(AllReduce.apply(clips.view(clips.shape[0], -1).var(dim=1).mean(dim=0)))
+[rank1]:                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/site-packages/torch/autograd/function.py", line 575, in apply
+[rank1]:     return super().apply(*args, **kwargs)  # type: ignore[misc]
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/eys8549/vjepa/src/utils/distributed.py", line 108, in forward
+[rank1]:     dist.all_reduce(x)
+[rank1]:   File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/site-packages/torch/distributed/c10d_logger.py", line 81, in wrapper
+[rank1]:     return func(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/home/eys8549/miniconda3/envs/vjepa/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py", line 2806, in all_reduce
+[rank1]:     work = group.allreduce([tensor], opts)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]: torch.distributed.DistBackendError: NCCL error in: /pytorch/torch/csrc/distributed/c10d/NCCLUtils.hpp:268, invalid usage (run with NCCL_DEBUG=WARN for details), NCCL version 2.21.5
+[rank1]: ncclInvalidUsage: This usually reflects invalid usage of NCCL library.
+[rank1]: Last error:
+[rank1]: Duplicate GPU detected : rank 1 and rank 0 both on CUDA device 40

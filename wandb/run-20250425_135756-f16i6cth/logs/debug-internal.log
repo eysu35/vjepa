@@ -1,0 +1,7 @@
+{"time":"2025-04-25T13:57:57.072613846-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"/home/eys8549/vjepa/wandb/run-20250425_135756-f16i6cth/logs/debug-core.log"}
+{"time":"2025-04-25T13:57:57.410722625-04:00","level":"INFO","msg":"created new stream","id":"f16i6cth"}
+{"time":"2025-04-25T13:57:57.410753019-04:00","level":"INFO","msg":"stream: started","id":"f16i6cth"}
+{"time":"2025-04-25T13:57:57.410783859-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"f16i6cth"}
+{"time":"2025-04-25T13:57:57.410807674-04:00","level":"INFO","msg":"sender: started","stream_id":"f16i6cth"}
+{"time":"2025-04-25T13:57:57.410837293-04:00","level":"INFO","msg":"handler: started","stream_id":"f16i6cth"}
+{"time":"2025-04-25T13:57:57.745989227-04:00","level":"INFO","msg":"Starting system monitor"}

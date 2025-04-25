@@ -6,16 +6,16 @@
 #
 
 import os
-
+import wandb
 # -- FOR DISTRIBUTED TRAINING ENSURE ONLY 1 DEVICE VISIBLE PER PROCESS
-try:
+#try:
     # -- WARNING: IF DOING DISTRIBUTED TRAINING ON A NON-SLURM CLUSTER, MAKE
     # --          SURE TO UPDATE THIS TO GET LOCAL-RANK ON NODE, OR ENSURE
     # --          THAT YOUR JOBS ARE LAUNCHED WITH ONLY 1 DEVICE VISIBLE
     # --          TO EACH PROCESS
-    os.environ['CUDA_VISIBLE_DEVICES'] = os.environ['SLURM_LOCALID']
-except Exception:
-    pass
+#    os.environ['CUDA_VISIBLE_DEVICES'] = os.environ['SLURM_LOCALID']
+#except Exception:
+#    pass
 
 import copy
 import time
@@ -25,7 +25,7 @@ import torch
 import torch.multiprocessing as mp
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel
-
+import torch.distributed as dist
 from src.datasets.data_manager import init_data
 from src.masks.random_tube import MaskCollator as TubeMaskCollator
 from src.masks.multiblock3d import MaskCollator as MB3DMaskCollator
@@ -172,11 +172,29 @@ def main(args, resume_preempt=False):
     logger.info(f'Initialized (rank/world-size) {rank}/{world_size}')
 
     # -- set device
-    if not torch.cuda.is_available():
-        device = torch.device('cpu')
-    else:
+#    if not torch.cuda.is_available():
+ #       device = torch.device('cpu')
+  #  else:
+   #     device = torch.device('cuda:0')
+    #    torch.cuda.set_device(device)
+    if dist.is_initialized():
+        local_rank = int(os.environ['LOCAL_RANK'])
+        device = torch.device(f'cuda:{local_rank}')
+        torch.cuda.set_device(device) # Set device for this specific rank
+        logger.info(f'Rank {rank} (local_rank {local_rank}) using device {device}')
+    elif torch.cuda.is_available():
+        # Fallback for non-distributed CUDA run
         device = torch.device('cuda:0')
-        torch.cuda.set_device(device)
+        local_rank = 0 # Define for non-distributed case compatibility downstream
+        logger.info(f'Non-distributed run, using device {device}')
+    else:
+        # Fallback for CPU run
+        device = torch.device('cpu')
+        local_rank = 0 # Define for non-distributed case compatibility downstream
+        logger.info(f'Non-distributed run, using device {device}')
+
+
+
 
     # -- log/checkpointing paths
     log_file = os.path.join(folder, f'{tag}_r{rank}.csv')
@@ -292,9 +310,10 @@ def main(args, resume_preempt=False):
         mixed_precision=mixed_precision,
         betas=betas,
         eps=eps)
-    encoder = DistributedDataParallel(encoder, static_graph=True)
-    predictor = DistributedDataParallel(predictor, static_graph=True)
-    target_encoder = DistributedDataParallel(target_encoder)
+    if dist.is_initialized():
+        encoder = DistributedDataParallel(encoder, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True, static_graph=True)
+        predictor = DistributedDataParallel(predictor, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True, static_graph=True)
+#    target_encoder = DistributedDataParallel(target_encoder)
     for p in target_encoder.parameters():
         p.requires_grad = False
 
@@ -572,6 +591,23 @@ def main(args, resume_preempt=False):
                                grad_stats_pred.min,
                                grad_stats_pred.max,
                                grad_stats_pred.global_norm))
+                                # --- Add Wandb Logging (only on rank 0) ---
+                if rank == 0:
+                    # Create a dictionary of metrics to log
+                    metrics_to_log = {
+                        'epoch': epoch + 1,
+                        'iteration': itr,
+                        'loss/total': loss,
+                        'loss/jepa': loss_jepa,
+                        'loss/regularization': loss_reg,
+                        'grad_norm/encoder': grad_stats.global_norm,
+                        'grad_norm/predictor': grad_stats_pred.global_norm,
+                        'time/gpu_ms': gpu_etime_ms,
+                        'time/wall_ms': iter_elapsed_time_ms,
+                    }
+                    wandb.log(metrics_to_log)
+                # --- End Wandb Logging ---
+
             log_stats()
             assert not np.isnan(loss), 'loss is nan'
 

@@ -1,0 +1,22 @@
+2025-04-24 23:32:20,198 INFO    MainThread:5574 [wandb_setup.py:_flush():68] Current SDK version is 0.19.10
+2025-04-24 23:32:20,198 INFO    MainThread:5574 [wandb_setup.py:_flush():68] Configure stats pid to 5574
+2025-04-24 23:32:20,198 INFO    MainThread:5574 [wandb_setup.py:_flush():68] Loading settings from /home/eys8549/.config/wandb/settings
+2025-04-24 23:32:20,198 INFO    MainThread:5574 [wandb_setup.py:_flush():68] Loading settings from /home/eys8549/vjepa/wandb/settings
+2025-04-24 23:32:20,198 INFO    MainThread:5574 [wandb_setup.py:_flush():68] Loading settings from environment variables
+2025-04-24 23:32:20,199 INFO    MainThread:5574 [wandb_init.py:setup_run_log_directory():724] Logging user logs to /home/eys8549/vjepa/wandb/run-20250424_233220-javxaszt/logs/debug.log
+2025-04-24 23:32:20,199 INFO    MainThread:5574 [wandb_init.py:setup_run_log_directory():725] Logging internal logs to /home/eys8549/vjepa/wandb/run-20250424_233220-javxaszt/logs/debug-internal.log
+2025-04-24 23:32:20,199 INFO    MainThread:5574 [wandb_init.py:init():852] calling init triggers
+2025-04-24 23:32:20,199 INFO    MainThread:5574 [wandb_init.py:init():857] wandb.init called with sweep_config: {}
+config: {'app': 'vjepa', 'nodes': 16, 'tasks_per_node': 8, 'data': {'dataset_type': 'VideoDataset', 'datasets': ['~/saycam_files.csv'], 'decode_one_clip': True, 'batch_size': 16, 'num_clips': 1, 'num_frames': 16, 'tubelet_size': 2, 'sampling_rate': 4, 'crop_size': 224, 'patch_size': 16, 'pin_mem': True, 'num_workers': 3, 'filter_short_videos': False, 'clip_duration': None}, 'data_aug': {'auto_augment': False, 'motion_shift': False, 'random_resize_aspect_ratio': [0.75, 1.35], 'random_resize_scale': [0.3, 1.0], 'reprob': 0.0}, 'logging': {'folder': '/scratch/eys8549/vjepa_training', 'write_tag': 'jepa'}, 'loss': {'loss_exp': 1.0, 'reg_coeff': 0.0}, 'mask': [{'aspect_ratio': [0.75, 1.5], 'num_blocks': 8, 'spatial_scale': [0.15, 0.15], 'temporal_scale': [1.0, 1.0], 'max_temporal_keep': 1.0, 'max_keep': None}, {'aspect_ratio': [0.75, 1.5], 'num_blocks': 2, 'spatial_scale': [0.7, 0.7], 'temporal_scale': [1.0, 1.0], 'max_temporal_keep': 1.0, 'max_keep': None}], 'meta': {'load_checkpoint': False, 'read_checkpoint': None, 'seed': 234, 'eval_freq': 100, 'use_sdpa': True, 'dtype': 'bfloat16'}, 'model': {'model_name': 'vit_large', 'pred_depth': 12, 'pred_embed_dim': 384, 'uniform_power': True, 'use_mask_tokens': True, 'zero_init_mask_tokens': True}, 'optimization': {'ipe': 300, 'ipe_scale': 1.25, 'clip_grad': 10.0, 'weight_decay': 0.04, 'final_weight_decay': 0.4, 'epochs': 300, 'warmup': 40, 'start_lr': 0.0002, 'lr': 0.000625, 'final_lr': 1e-06, 'ema': [0.998, 1.0]}, '_wandb': {}}
+2025-04-24 23:32:20,199 INFO    MainThread:5574 [wandb_init.py:init():893] starting backend
+2025-04-24 23:32:20,199 INFO    MainThread:5574 [wandb_init.py:init():897] sending inform_init request
+2025-04-24 23:32:20,215 INFO    MainThread:5574 [backend.py:_multiprocessing_setup():101] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-04-24 23:32:20,215 INFO    MainThread:5574 [wandb_init.py:init():907] backend started and connected
+2025-04-24 23:32:20,217 INFO    MainThread:5574 [wandb_init.py:init():1002] updated telemetry
+2025-04-24 23:32:20,278 INFO    MainThread:5574 [wandb_init.py:init():1026] communicating run to backend with 90.0 second timeout
+2025-04-24 23:32:20,690 INFO    MainThread:5574 [wandb_init.py:init():1101] starting run threads in backend
+2025-04-24 23:32:21,044 INFO    MainThread:5574 [wandb_run.py:_console_start():2566] atexit reg
+2025-04-24 23:32:21,044 INFO    MainThread:5574 [wandb_run.py:_redirect():2414] redirect: wrap_raw
+2025-04-24 23:32:21,045 INFO    MainThread:5574 [wandb_run.py:_redirect():2483] Wrapping output streams.
+2025-04-24 23:32:21,045 INFO    MainThread:5574 [wandb_run.py:_redirect():2506] Redirects installed.
+2025-04-24 23:32:21,058 INFO    MainThread:5574 [wandb_init.py:init():1147] run started, returning control to user process

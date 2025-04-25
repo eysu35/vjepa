@@ -1,0 +1,15 @@
+{"time":"2025-04-25T13:57:57.100618674-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"/home/eys8549/vjepa/wandb/run-20250425_135757-oawovfm2/logs/debug-core.log"}
+{"time":"2025-04-25T13:57:57.410522219-04:00","level":"INFO","msg":"created new stream","id":"oawovfm2"}
+{"time":"2025-04-25T13:57:57.4105551-04:00","level":"INFO","msg":"stream: started","id":"oawovfm2"}
+{"time":"2025-04-25T13:57:57.410585327-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"oawovfm2"}
+{"time":"2025-04-25T13:57:57.410617825-04:00","level":"INFO","msg":"handler: started","stream_id":"oawovfm2"}
+{"time":"2025-04-25T13:57:57.410638216-04:00","level":"INFO","msg":"sender: started","stream_id":"oawovfm2"}
+{"time":"2025-04-25T13:57:57.604950125-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-25T13:59:09.537863472-04:00","level":"INFO","msg":"stream: closing","id":"oawovfm2"}
+{"time":"2025-04-25T13:59:09.537968134-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-25T13:59:09.53829641-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-25T13:59:09.996198288-04:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-04-25T13:59:10.147854457-04:00","level":"INFO","msg":"handler: closed","stream_id":"oawovfm2"}
+{"time":"2025-04-25T13:59:10.147889258-04:00","level":"INFO","msg":"sender: closed","stream_id":"oawovfm2"}
+{"time":"2025-04-25T13:59:10.147891427-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"oawovfm2"}
+{"time":"2025-04-25T13:59:10.149671118-04:00","level":"INFO","msg":"stream: closed","id":"oawovfm2"}
