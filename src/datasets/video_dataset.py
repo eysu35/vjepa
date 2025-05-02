@@ -36,6 +36,7 @@ def make_videodataset(
     filter_long_videos=int(10**9),
     transform=None,
     shared_transform=None,
+    training=False,
     rank=0,
     world_size=1,
     datasets_weights=None,
@@ -73,6 +74,13 @@ def make_videodataset(
             num_replicas=world_size,
             rank=rank,
             shuffle=True)
+
+    if not training:
+        dist_sampler = torch.utils.data.distributed.DistributedSampler(
+            dataset,
+            num_replicas=world_size,
+            rank=rank,
+            shuffle=False)
 
     data_loader = torch.utils.data.DataLoader(
         dataset,
@@ -129,11 +137,16 @@ class VideoDataset(torch.utils.data.Dataset):
 
             if data_path[-4:] == '.csv':
                 data = pd.read_csv(data_path, header=None, delimiter=" ")
+                logger.info(data)
+                logger.info(data_path)
+                print(data)
                 samples += list(data.values[:, 0])
                 labels += list(data.values[:, 1])
+                logger.info(f"eval samples: {samples}")
                 num_samples = len(data)
+                logger.info(f"num eval samples: {num_samples}")
                 self.num_samples_per_dataset.append(num_samples)
-
+                
             elif data_path[-4:] == '.npy':
                 data = np.load(data_path, allow_pickle=True)
                 data = list(map(lambda x: repr(x)[1:-1], data))
@@ -152,6 +165,8 @@ class VideoDataset(torch.utils.data.Dataset):
 
         self.samples = samples
         self.labels = labels
+        logger.info(self.samples)
+        logger.info(self.labels) 
 
     def __getitem__(self, index):
         sample = self.samples[index]

@@ -73,6 +73,7 @@ def init_data(
             frames_per_clip=clip_len,
             frame_step=frame_sample_rate,
             duration=duration,
+            training=training,
             num_clips=num_clips,
             random_clip_sampling=random_clip_sampling,
             allow_clip_overlap=allow_clip_overlap,

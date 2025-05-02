@@ -7,7 +7,7 @@ data:
     - ~/saycam_files.csv
   eval_dataset:
     -  ~/saycam_evals.csv
-  eval_batch_size: 1
+  eval_batch_size: 16
   decode_one_clip: true
   batch_size: 16
   num_clips: 1
@@ -71,7 +71,7 @@ meta:
   use_sdpa: true
   dtype: bfloat16
 model:
-  model_name: vit_large
+  model_name: vit_base
   pred_depth: 12
   pred_embed_dim: 384
   uniform_power: true
@@ -82,11 +82,11 @@ optimization:
   ipe_scale: 1.0
   clip_grad: 1.0
   weight_decay: 0.04
-  final_weight_decay: 0.04
-  epochs: 5
-  warmup: 40
-  start_lr: 0.0001
-  lr: 0.0003
+  final_weight_decay: 0.2
+  epochs: 40
+  warmup: 10
+  start_lr: 0.0002
+  lr: 0.000625
   final_lr: 1.0e-06
   ema:
   - 0.998

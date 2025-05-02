@@ -46,7 +46,7 @@ from app.vjepa.utils import (
     init_opt,
 )
 from app.vjepa.transforms import make_transforms
-from app.vjepa.eval import evaluate
+
 
 # --
 log_timings = True
@@ -73,7 +73,6 @@ def main(args, resume_preempt=False):
     load_model = cfgs_meta.get('load_checkpoint') or resume_preempt
     r_file = cfgs_meta.get('read_checkpoint', None)
     seed = cfgs_meta.get('seed', _GLOBAL_SEED)
-    eval_freq = cfgs_meta.get('eval_freq', 100)
     save_every_freq = cfgs_meta.get('save_every_freq', -1)
     skip_batches = cfgs_meta.get('skip_batches', -1)
     use_sdpa = cfgs_meta.get('use_sdpa', False)
@@ -106,8 +105,6 @@ def main(args, resume_preempt=False):
     dataset_type = cfgs_data.get('dataset_type', 'videodataset')
     mask_type = cfgs_data.get('mask_type', 'multiblock3d')
     dataset_paths = cfgs_data.get('datasets', [])
-    eval_dataset_path = cfgs_data.get('eval_dataset')
-    eval_batch_size = cfgs_data.get('eval_batch_size')
     datasets_weights = cfgs_data.get('datasets_weights', None)
     if datasets_weights is not None:
         assert len(datasets_weights) == len(dataset_paths), 'Must have one sampling weight specified for each dataset'
@@ -158,9 +155,6 @@ def main(args, resume_preempt=False):
     cfgs_logging = args.get('logging')
     folder = cfgs_logging.get('folder')
     tag = cfgs_logging.get('write_tag')
-    latest_path = cfgs_logging.get('save_latest_file_name')
-    best_path = cfgs_logging.get('save_best_filename')
-
 
     # ----------------------------------------------------------------------- #
     # ----------------------------------------------------------------------- #
@@ -204,10 +198,8 @@ def main(args, resume_preempt=False):
 
     # -- log/checkpointing paths
     log_file = os.path.join(folder, f'{tag}_r{rank}.csv')
-    latest_file = f'{tag}-{latest_path}'
-    best_file = f'{tag}-{best_path}'
+    latest_file = f'{tag}-latest.pth.tar'
     latest_path = os.path.join(folder, latest_file)
-    best_path = os.path.join(folder, best_file)
     load_path = None
     if load_model:
         load_path = os.path.join(folder, r_file) if r_file is not None else latest_path
@@ -302,38 +294,6 @@ def main(args, resume_preempt=False):
         ipe = _dlen
     logger.info(f'iterations per epoch/dataest length: {ipe}/{_dlen}')
 
-
-    # -- init eval data loader
-
-    eval_loader = None # Initialize to None
-    eval_sampler = None
-    try:
-        (eval_loader, eval_sampler) = init_data(
-            data=dataset_type,
-            root_path=eval_dataset_path,
-            batch_size=eval_batch_size,
-            training=False,
-            clip_len=num_frames,
-            frame_sample_rate=sampling_rate,
-            filter_short_videos=filter_short_videos,
-            decode_one_clip=decode_one_clip,
-            duration=duration,
-            num_clips=num_clips,
-            transform=transform,
-            collator=mask_collator,
-            num_workers=num_workers,
-            world_size=world_size,
-            pin_mem=pin_mem,
-            rank=rank,
-            log_dir=folder if log_resource_util_data else None)
-        logger.info(f"Initialized evaluation DataLoader with {len(eval_loader)} batches ")
-
-    except Exception as e:
-        # Catch any other unexpected errors during setup
-        logger.error(f"Failed to initialize evaluation dataset/loader: {e}", exc_info=True)
-
-    # <<< END OF SECTION TO PASTE >>>
-
     # -- init optimizer and scheduler
     optimizer, scaler, scheduler, wd_scheduler = init_opt(
         encoder=encoder,
@@ -362,8 +322,6 @@ def main(args, resume_preempt=False):
                           for i in range(int(ipe*num_epochs*ipe_scale)+1))
 
     start_epoch = 0
-    global_step = 0
-    best_eval_loss = float('inf')
     # -- load training checkpoint
     if load_model or os.path.exists(latest_path):
         (
@@ -436,7 +394,7 @@ def main(args, resume_preempt=False):
         mask_meters = [AverageMeter() for _ in range(len(cfgs_mask))]
         gpu_time_meter = AverageMeter()
         wall_time_meter = AverageMeter()
-        eval_time_meter = AverageMeter()
+
         for itr in range(ipe):
             itr_start_time = time.time()
 
@@ -653,67 +611,6 @@ def main(args, resume_preempt=False):
             log_stats()
             assert not np.isnan(loss), 'loss is nan'
 
-            # <<< NEW/MODIFIED START: Evaluation and Checkpointing Trigger >>>
-            # This block remains largely the same, but calls the imported 'evaluate'
-            if eval_loader is not None and global_step > 0 and global_step % eval_freq == 0:
-                # <<< Note: The call to evaluate() now uses the imported function >>>
-                current_eval_loss, eval_duration_sec = evaluate( # Capture duration too
-                    # Pass all necessary arguments
-                    encoder=encoder,
-                    predictor=predictor,
-                    target_encoder=target_encoder,
-                    eval_loader=eval_loader,
-                    mask_collator=mask_collator, # Pass the collator used for eval loader
-                    device=device,
-                    dtype=dtype,
-                    mixed_precision=mixed_precision,
-                    loss_exp=loss_exp,
-                    num_clips=num_clips,
-                    batch_size=eval_batch_size,
-                    world_size=world_size,
-                    cfgs_mask=cfgs_mask,
-                    rank=rank
-                )
-                eval_elapsed_ms = eval_duration_sec * 1000.0 # Convert duration to ms
-                eval_time_meter.update(eval_elapsed_ms)
-                last_eval_loss = current_eval_loss
-
-                if rank == 0: # Rank 0 handles logging, comparison, and saving
-                    logger.info(f'--- Evaluation @ Global Step {global_step} ---')
-                    logger.info(f'Eval Loss: {current_eval_loss:.4f} (Best: {best_eval_loss:.4f})')
-                    logger.info(f'Eval Time: {eval_elapsed_ms:.1f} ms')
-                    # Log eval loss and time to WandB
-                    wandb.log({'eval/loss': current_eval_loss, 'eval/time_ms': eval_elapsed_ms}, step=global_step)
-
-                    # --- Early Stopping & Checkpoint Saving (Stays in train.py) ---
-                    is_best = current_eval_loss < best_eval_loss
-                    if is_best:
-                        logger.info(f"*** New best model found! Loss improved from {best_eval_loss:.4f} to {current_eval_loss:.4f} ***")
-                        best_eval_loss = current_eval_loss
-                        if wandb.run: # Check if wandb run exists
-                             wandb.run.summary["best_eval_loss"] = best_eval_loss
-
-                    # --- Prepare state dict and save checkpoint ---
-
-                        eval_metrics_to_log= {
-                            'epoch': epoch + 1,
-                            'iteration': itr,
-                            'global_step': global_step,
-                            'best_eval_loss': best_eval_loss,
-                            'current_eval_loss': current_eval_loss,
-                        }
-                        wandb.log(eval_metrics_to_log)
-                        save_checkpoint(epoch + 1, best_path)
-
-                # <<< End Rank 0 block >>>
-
-                # Barrier to ensure all ranks complete eval before continuing training
-                if dist.is_initialized():
-                    dist.barrier()
-
-            global_step += 1
-            # <<< NEW/MODIFIED END: Evaluation and Checkpointing Trigger >>>
-
         # -- Save Checkpoint
         logger.info('avg. loss %.3f' % loss_meter.avg)
         # -- Save Last
@@ -723,4 +620,3 @@ def main(args, resume_preempt=False):
                 save_every_file = f'{tag}-e{epoch}.pth.tar'
                 save_every_path = os.path.join(folder, save_every_file)
                 save_checkpoint(epoch + 1, save_every_path)
-
