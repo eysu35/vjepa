@@ -1,2 +1,55 @@
+# --- Weights & Biases ---
+# Ignore wandb logs and artifacts
+wandb/
+
+# --- Python ---
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.code-workspace
+
+# Secrets / Credentials (Important!)
+*.env
+*.envrc
+credentials*
+*.key
+*.pem
+
+# Logs
+*.log
+logs/
+
+# Data / Checkpoints (Optional - uncomment if needed)
+# data/
+# checkpoints/
+# models/
+# *.pt
+# *.pth
+# *.ckpt
+
 .*.swp
 *.pyc
