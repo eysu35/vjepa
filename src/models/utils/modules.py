@@ -88,35 +88,63 @@ class Block(nn.Module):
         qk_scale=None,
         drop=0.,
         attn_drop=0.,
+        drop_path=0.,
         act_layer=nn.GELU,
+        wide_SiLU=True,
         norm_layer=nn.LayerNorm,
+        use_rope=False,
         grid_size=None,
         grid_depth=None,
+        is_causal=False,
+        use_sdpa=True,
     ):
         super().__init__()
         self.norm1 = norm_layer(dim)
-        self.attn = Attention(
-            dim,
-            num_heads=num_heads,
-            qkv_bias=qkv_bias,
-            qk_scale=qk_scale,
-            attn_drop=attn_drop,
-            proj_drop=drop)
-
+        if not use_rope:
+            self.attn = Attention(
+                dim,
+                num_heads=num_heads,
+                qkv_bias=qkv_bias,
+                qk_scale=qk_scale,
+                attn_drop=attn_drop,
+                is_causal=is_causal,
+                use_sdpa=use_sdpa,
+                proj_drop=drop)
+        else:
+            self.attn = RoPEAttention3D(
+                    dim,
+                    num_heads=num_heads,
+                    qkv_bias=qkv_bias,
+                    qk_scale=qk_scale,
+                    attn_drop=attn_drop,
+                    grid_size=grid_size,
+                    grid_depth=grid_depth,
+                    use_sdpa=use_sdpa,
+                    proj_drop=drop)
+            
+        self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
         self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
-        self.mlp = MLP(
-            in_features=dim,
-            hidden_features=mlp_hidden_dim,
-            act_layer=act_layer,
-            drop=drop)
+        if act_layer is nn.SiLU:
+            self.mlp = SwiGLUFFN(
+                in_features=dim,
+                hidden_features=mlp_hidden_dim,
+                act_layer=act_layer,
+                wide_SiLU=wide_SiLU,
+                drop=drop)
+        else:
+            self.mlp = MLP(
+                in_features=dim,
+                hidden_features=mlp_hidden_dim,
+                act_layer=act_layer,
+                drop=drop)
 
     def forward(self, x, return_attention=False, mask=None):
         y, attn = self.attn(self.norm1(x), mask=mask)
         if return_attention:
             return attn
-        x = x + y
-        x = x + self.mlp(self.norm2(x))
+        x = x + self.drop_path(y)
+        x = x + self.drop_path(self.mlp(self.norm2(x)))
         return x
 
 
