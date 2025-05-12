@@ -4,9 +4,9 @@ tasks_per_node: 8
 data:
   dataset_type: VideoDataset
   datasets:
-    - ~/saycam_files.csv
+    - ~/train_full.csv
   eval_dataset:
-    -  ~/saycam_evals.csv
+    -  ~/valid_full.csv
   eval_batch_size: 16
   decode_one_clip: true
   batch_size: 16
@@ -83,8 +83,8 @@ optimization:
   clip_grad: 1.0
   weight_decay: 0.04
   final_weight_decay: 0.04
-  epochs: 40
-  warmup: 10
+  epochs: 50
+  warmup: 15
   start_lr: 0.0002
   lr: 0.000625
   final_lr: 1.0e-06

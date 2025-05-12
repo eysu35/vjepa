@@ -158,8 +158,8 @@ def main(args, resume_preempt=False):
     cfgs_logging = args.get('logging')
     folder = cfgs_logging.get('folder')
     tag = cfgs_logging.get('write_tag')
-    latest_path = cfgs_logging.get('save_latest_file_name')
-    best_path = cfgs_logging.get('save_best_filename')
+    latest_filename = cfgs_logging.get('save_latest_filename')
+    best_filename = cfgs_logging.get('save_best_filename')
 
 
     # ----------------------------------------------------------------------- #
@@ -204,8 +204,8 @@ def main(args, resume_preempt=False):
 
     # -- log/checkpointing paths
     log_file = os.path.join(folder, f'{tag}_r{rank}.csv')
-    latest_file = f'{tag}-{latest_path}'
-    best_file = f'{tag}-{best_path}'
+    latest_file = f'{tag}_{latest_filename}'
+    best_file = f'{tag}_{best_filename}'
     latest_path = os.path.join(folder, latest_file)
     best_path = os.path.join(folder, best_file)
     load_path = None

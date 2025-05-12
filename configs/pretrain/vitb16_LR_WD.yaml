@@ -31,10 +31,10 @@ data_aug:
   - 1.0
   reprob: 0.0
 logging:
-  folder: /scratch/eys8549/vjepa_training
+  folder: /scratch/eys8549/vjepa_training/base
   write_tag: jepa
-  save_latest_filename: jepa-latest.pth.tar
-  save_best_filename: jepa-best.pth.tar
+  save_latest_filename: latest_LR_WD.pth.tar
+  save_best_filename: best_LR_WD.pth.tar
 loss:
   loss_exp: 1.0
   reg_coeff: 0.0
