@@ -39,6 +39,11 @@ class VisionTransformer(nn.Module):
         init_std=0.02,
         out_layers=None,
         uniform_power=False,
+        use_SiLU=False,
+        use_rope=False,  # RoPE currently only supported for video
+        wide_SiLU=True,
+        is_causal=False,
+        use_sdpa=True,
         **kwargs
     ):
         super().__init__()
@@ -55,6 +60,11 @@ class VisionTransformer(nn.Module):
 
         grid_size = self.input_size // self.patch_size
         grid_depth = self.num_frames // self.tubelet_size
+
+        dpr = [
+            x.item() for x in torch.linspace(0, drop_path_rate, depth)
+        ]  # stochastic depth decay rule
+
 
         # Tokenize pixels with convolution
         if self.is_video:
@@ -81,23 +91,29 @@ class VisionTransformer(nn.Module):
         # Position embedding
         self.uniform_power = uniform_power
         self.pos_embed = None
-        self.pos_embed = nn.Parameter(
-            torch.zeros(1, self.num_patches, embed_dim),
-            requires_grad=False)
-
+        if not use_rope:
+            self.pos_embed = nn.Parameter(
+                torch.zeros(1, self.num_patches, embed_dim),
+                requires_grad=False)
+            
         # Attention Blocks
         self.blocks = nn.ModuleList([
             Block(
                 dim=embed_dim,
                 num_heads=num_heads,
                 mlp_ratio=mlp_ratio,
+                is_causal=is_causal,
+                use_sdpa=use_sdpa,
                 qkv_bias=qkv_bias,
                 qk_scale=qk_scale,
                 drop=drop_rate,
-                act_layer=nn.GELU,
-                grid_size=grid_size,
-                grid_depth=grid_depth,
+                act_layer=nn.SiLU if use_SiLU else nn.GELU,
+                wide_SiLU=wide_SiLU,
+                grid_size=self.grid_size,
+                grid_depth=self.grid_depth,
+                use_rope=use_rope,
                 attn_drop=attn_drop_rate,
+                drop_path=dpr[i],
                 norm_layer=norm_layer)
             for i in range(depth)])
         self.norm = norm_layer(embed_dim)
@@ -182,7 +198,8 @@ class VisionTransformer(nn.Module):
         # Fwd prop
         outs = []
         for i, blk in enumerate(self.blocks):
-            x = blk(x, mask=masks)
+            x = torch.utils.checkpoint.checkpoint(blk,x,False,masks,use_reentrant=False)
+            # x = blk(x, mask=masks)
             if self.out_layers is not None and i in self.out_layers:
                 outs.append(self.norm(x))
 
@@ -259,6 +276,11 @@ def vit_small(patch_size=16, **kwargs):
         qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
     return model
 
+def vit_base_rope(patch_size=16, **kwargs):
+    model = VisionTransformer(
+        patch_size=patch_size, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
+        qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rope=True, **kwargs)
+    return model
 
 def vit_base(patch_size=16, **kwargs):
     model = VisionTransformer(
