@@ -274,7 +274,8 @@ class Attention(nn.Module):
         qk_scale=None,
         attn_drop=0.,
         proj_drop=0.,
-        use_sdpa=True
+        use_sdpa=True,
+        is_causal=False
     ):
         super().__init__()
         self.num_heads = num_heads
@@ -286,6 +287,7 @@ class Attention(nn.Module):
         self.proj_drop_prob = proj_drop
         self.proj_drop = nn.Dropout(proj_drop)
         self.use_sdpa = use_sdpa
+        self.is_causal = is_causal
 
     def forward(self, x, mask=None):
         B, N, C = x.shape
@@ -294,7 +296,7 @@ class Attention(nn.Module):
 
         if self.use_sdpa:
             with torch.backends.cuda.sdp_kernel():
-                x = F.scaled_dot_product_attention(q, k, v, dropout_p=self.proj_drop_prob)
+                x = F.scaled_dot_product_attention(q, k, v, dropout_p=self.proj_drop_prob, is_causal=self.is_causal)
                 attn = None
         else:
             attn = (q @ k.transpose(-2, -1)) * self.scale  # [B, num_heads, D, D]
