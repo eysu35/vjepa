@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=BS_vjepaTraining_a100
+#SBATCH --job-name=rope_full_vjepaTraining
 #SBATCH --account=csci_ga_3033-2025sp
 #SBATCH --output=/scratch/eys8549/vjepa_training/base/train_rope_full_%j.out
 #SBATCH --error=/scratch/eys8549/vjepa_training/base/train_rope_full_%j.err
