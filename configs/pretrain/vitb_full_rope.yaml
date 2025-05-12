@@ -79,7 +79,7 @@ model:
   zero_init_mask_tokens: true
 optimization:
   ipe: 300
-  ipe_scale: 1.0
+  ipe_scale: 1.25
   clip_grad: 1.0
   weight_decay: 0.04
   final_weight_decay: 0.04
