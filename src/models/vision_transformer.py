@@ -35,6 +35,7 @@ class VisionTransformer(nn.Module):
         qk_scale=None,
         drop_rate=0.0,
         attn_drop_rate=0.0,
+        drop_path_rate=0.0,
         norm_layer=nn.LayerNorm,
         init_std=0.02,
         out_layers=None,
