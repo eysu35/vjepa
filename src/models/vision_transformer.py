@@ -59,8 +59,8 @@ class VisionTransformer(nn.Module):
         self.tubelet_size = tubelet_size
         self.is_video = num_frames > 1
 
-        grid_size = self.input_size // self.patch_size
-        grid_depth = self.num_frames // self.tubelet_size
+        self.grid_size = self.input_size // self.patch_size
+        self.grid_depth = self.num_frames // self.tubelet_size
 
         dpr = [
             x.item() for x in torch.linspace(0, drop_path_rate, depth)
