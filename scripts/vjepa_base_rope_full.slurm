@@ -3,7 +3,7 @@
 #SBATCH --account=csci_ga_3033-2025sp
 #SBATCH --output=/scratch/eys8549/vjepa_training/base/train_rope_full_%j.out
 #SBATCH --error=/scratch/eys8549/vjepa_training/base/train_rope_full_%j.err
-#SBATCH --time=01:00:00
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1   # Change: Request only 1 task for the whole node
 #SBATCH --gres=gpu:2          # Keep: Request 2 GPUs for this single task
