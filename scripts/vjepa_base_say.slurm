@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=large_rope_full_vjepaTraining
+#SBATCH --job-name=base_say
 #SBATCH --account=csci_ga_3033-2025sp
-#SBATCH --output=/scratch/eys8549/vjepa_training/large/train_rope_full_%j.out
-#SBATCH --error=/scratch/eys8549/vjepa_training/large/train_rope_full_%j.err
+#SBATCH --output=/scratch/eys8549/vjepa_training/base_say/train_s_%j.out
+#SBATCH --error=/scratch/eys8549/vjepa_training/base_say/train_s_%j.err
 #SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1   # Change: Request only 1 task for the whole node
@@ -34,4 +34,4 @@ srun --mpi=none singularity exec --nv \
      torchrun \
        --nproc_per_node=2 \
        app/main_distributed.py \
-       --fname configs/pretrain/vitl_full_rope.yaml "
+       --fname configs/pretrain/vitb_say.yaml "

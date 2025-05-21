@@ -31,10 +31,10 @@ data_aug:
   - 1.0
   reprob: 0.0
 logging:
-  folder: /scratch/eys8549/vjepa_training/base/
+  folder: /scratch/eys8549/vjepa_training/base_say/
   write_tag: jepa
-  save_latest_filename: latest_LR.pth.tar
-  save_best_filename: best_LR.pth.tar
+  save_latest_filename: latest.pth.tar
+  save_best_filename: best.pth.tar
 loss:
   loss_exp: 1.0
   reg_coeff: 0.0
@@ -71,7 +71,7 @@ meta:
   use_sdpa: true
   dtype: bfloat16
 model:
-  model_name: vit_base_rope
+  model_name: vit_base
   pred_depth: 12
   pred_embed_dim: 384
   uniform_power: true
@@ -83,8 +83,8 @@ optimization:
   clip_grad: 1.0
   weight_decay: 0.04
   final_weight_decay: 0.04
-  epochs: 50
-  warmup: 15
+  epochs: 40
+  warmup: 10
   start_lr: 0.0002
   lr: 0.000625
   final_lr: 1.0e-06
