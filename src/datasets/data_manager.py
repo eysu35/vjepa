@@ -16,7 +16,7 @@ def init_data(
     batch_size,
     transform=None,
     shared_transform=None,
-    data='ImageNet',
+    data="ImageNet",
     collator=None,
     pin_mem=True,
     num_workers=8,
@@ -44,11 +44,13 @@ def init_data(
     ipe=300,
     log_dir=None,
 ):
-
-    if (data.lower() == 'imagenet') \
-            or (data.lower() == 'inat21') \
-            or (data.lower() == 'places205'):
+    if (
+        (data.lower() == "imagenet")
+        or (data.lower() == "inat21")
+        or (data.lower() == "places205")
+    ):
         from src.datasets.image_dataset import make_imagedataset
+
         dataset, data_loader, dist_sampler = make_imagedataset(
             transform=transform,
             batch_size=batch_size,
@@ -63,10 +65,12 @@ def init_data(
             persistent_workers=persistent_workers,
             copy_data=copy_data,
             drop_last=drop_last,
-            subset_file=subset_file)
+            subset_file=subset_file,
+        )
 
-    elif data.lower() == 'videodataset':
+    elif data.lower() == "videodataset":
         from src.datasets.video_dataset import make_videodataset
+
         dataset, data_loader, dist_sampler = make_videodataset(
             data_paths=root_path,
             batch_size=batch_size,
@@ -87,6 +91,7 @@ def init_data(
             world_size=world_size,
             rank=rank,
             drop_last=drop_last,
-            log_dir=log_dir)
+            log_dir=log_dir,
+        )
 
     return (data_loader, dist_sampler)

@@ -29,9 +29,11 @@ def setup_distributed():
     torch.cuda.set_device(local_rank)
     dist.init_process_group(backend="nccl", init_method="env://")
 
-    logger.info(f"[RANK {rank}] LOCAL_RANK={local_rank}, "
-                f"CUDA Device={torch.cuda.current_device()} "
-                f"Name={torch.cuda.get_device_name(local_rank)}")
+    logger.info(
+        f"[RANK {rank}] LOCAL_RANK={local_rank}, "
+        f"CUDA Device={torch.cuda.current_device()} "
+        f"Name={torch.cuda.get_device_name(local_rank)}"
+    )
 
     return rank, local_rank, world_size
 
@@ -41,11 +43,11 @@ def setup_distributed():
 # --------------------------
 class Trainer:
     def __init__(self, args_pretrain):
-        self.app = args_pretrain['app']
+        self.app = args_pretrain["app"]
         self.args_pretrain = args_pretrain
 
     def __call__(self):
-        logger.info('Loaded training params:')
+        logger.info("Loaded training params:")
         pprint.pprint(self.args_pretrain)
         app_main(self.app, args=self.args_pretrain, resume_preempt=False)
 
@@ -54,7 +56,7 @@ class Trainer:
 # Main launch function
 # --------------------------
 def launch():
-    with open(args.fname, 'r') as y_file:
+    with open(args.fname, "r") as y_file:
         config = yaml.load(y_file, Loader=yaml.FullLoader)
 
     logger.info(f"Loaded config from: {args.fname}")
@@ -62,11 +64,13 @@ def launch():
 
     if rank == 0:
         logger.info(f"Launching training on {world_size} GPUs...")
-    
-    wandb.init(project="vjepa-pretraining",
-               entity="ellensu-new-york-university",
-               config=config,
-               group="vjepa_distributed_run")
+
+    wandb.init(
+        project="vjepa-pretraining",
+        entity="ellensu-new-york-university",
+        config=config,
+        group="vjepa_distributed_run",
+    )
 
     trainer = Trainer(config)
     trainer()
@@ -75,13 +79,14 @@ def launch():
 # --------------------------
 # Argument parsing
 # --------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--fname', type=str,
-        help='Path to YAML config file',
-        default='configs/pretrain/vitl16.yaml')
+        "--fname",
+        type=str,
+        help="Path to YAML config file",
+        default="configs/pretrain/vitl16.yaml",
+    )
     args = parser.parse_args()
 
     launch()
-
